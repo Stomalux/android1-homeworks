@@ -52,39 +52,44 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                 _state.value = FeedModelState.Idle
             } catch (e: Exception) {
                 _state.value = FeedModelState.Error
-
             }
         }
     }
 
-    fun likeById(post: Post) {
-        viewModelScope.launch { }
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////
-        // repository.likeByIdAsync(post)
-
-        _postCreated.postValue(Unit)
-        loadPosts()
-    }
-
-
-    fun save() {
+     fun likeById(post: Post) {
         viewModelScope.launch {
-            edited.value?.let {
+            try {
+                _state.value = FeedModelState.Loading
 
-                //         println("do do")
-                repository.save(it)
+             //   println("555555555555555555555555555555555555555555555555555555555")
+                ///////////////////////////////////////////////////////////////////////////////////////////////
+                repository.likeByIdAsync(post)
+                _state.value = FeedModelState.Idle
                 _postCreated.postValue(Unit)
+                loadPosts()
+            } catch (e: Exception) {
+                _state.value = FeedModelState.Error
             }
-            edited.value = empty
         }
     }
 
+        fun save() {
+            viewModelScope.launch {
+                edited.value?.let {
 
-    fun removeById(id: Long) {
-        viewModelScope.launch {
-            repository.removeById(id)
-            loadPosts()
+                    //         println("do do")
+                    repository.save(it)
+                    _postCreated.postValue(Unit)
+                }
+                edited.value = empty
+            }
+        }
+
+
+        fun removeById(id: Long) {
+            viewModelScope.launch {
+                repository.removeById(id)
+                loadPosts()
 //            override fun onSuccess(posts: Unit) {
 //
 //            }
@@ -93,33 +98,33 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 //                _data.value = (FeedModel(error = true))
 //            }
 //        })
-        }
-    }
-
-    fun edit(post: Post) {
-        edited.value = post
-    }
-
-    fun changeContent(content: String) {
-        val text = content.trim()
-        if (edited.value?.content == text) {
-            return
-        }
-        edited.value = edited.value?.copy(content = text)
-    }
-
-
-    fun refresh() {
-        viewModelScope.launch {
-            _state.value = FeedModelState.Refreshing
-            try {
-                repository.getAllAsync()
-                _state.value = FeedModelState.Idle
-            } catch (e: Exception) {
-                _state.value = FeedModelState.Error
-
             }
         }
-    }
 
-}
+        fun edit(post: Post) {
+            edited.value = post
+        }
+
+        fun changeContent(content: String) {
+            val text = content.trim()
+            if (edited.value?.content == text) {
+                return
+            }
+            edited.value = edited.value?.copy(content = text)
+        }
+
+
+        fun refresh() {
+            viewModelScope.launch {
+                _state.value = FeedModelState.Refreshing
+                try {
+                    repository.getAllAsync()
+                    _state.value = FeedModelState.Idle
+                } catch (e: Exception) {
+                    _state.value = FeedModelState.Error
+
+                }
+            }
+        }
+
+    }
