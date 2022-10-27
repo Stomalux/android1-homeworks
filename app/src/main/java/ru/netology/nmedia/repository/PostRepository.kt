@@ -4,7 +4,10 @@ import androidx.lifecycle.LiveData
 import ru.netology.nmedia.dto.Post
 
 interface PostRepository {
-    val data: LiveData<List<Post>>
+
+    val data: Float<List<Post>>
+
+    //val data: LiveData<List<Post>>
     suspend  fun getAllAsync()
     suspend  fun save(post: Post)
     suspend  fun removeById(id: Long)
