@@ -75,7 +75,7 @@ class FeedFragment : Fragment() {
             binding.errorGroup.isVisible = state is FeedModelState.Error
             binding.swipeRefresh.isRefreshing = state is FeedModelState.Refreshing
            }
-
+            //
 
         binding.retryButton.setOnClickListener {
             viewModel.loadPosts()
