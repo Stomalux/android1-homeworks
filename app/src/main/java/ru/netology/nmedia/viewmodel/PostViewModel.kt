@@ -2,6 +2,8 @@ package ru.netology.nmedia.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.dto.Post
@@ -27,12 +29,18 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     )
 
     // private val _data = MutableLiveData(FeedModel())
-    val data: LiveData<FeedModel> = repository.data.map { FeedModel(it, it.isEmpty()) }
+    val data: LiveData<FeedModel> = repository.data.map (::FeedModel )
+        .asLiveData(Dispatchers.Default)
     //  get() = _data
 
     private val _state = MutableLiveData<FeedModelState>(FeedModelState.Idle)
     val state: LiveData<FeedModelState>
         get() = _state
+
+    val newerCount: LiveData<Int> = data.switchMap {                            //следим за таблицей и как только изменется
+        repository.getNewerCount(it.posts.firstOrNull()?.id ?: 0L)          //пересоздаем подписку на новые посты
+            .asLiveData(Dispatchers.Default)
+    }
 
 
     val edited = MutableLiveData(empty)

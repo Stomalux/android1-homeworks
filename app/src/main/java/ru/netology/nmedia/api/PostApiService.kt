@@ -27,6 +27,10 @@ interface PostApiService {
     @GET("posts")
     suspend fun getAllAsync(): Response<List<Post>>
 
+    @GET("posts/{id}/newer")
+    suspend fun getNewer(@Path("id") id: Long): Response<List<Post>>
+
+
     @GET("posts/{id}")
     suspend fun getBiId(@Path("id") id: Long): Response<Post>
 
