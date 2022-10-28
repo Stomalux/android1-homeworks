@@ -134,5 +134,13 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                 }
             }
         }
-
+    fun loadNewPosts() = viewModelScope.launch {
+        try {
+            _state.value = FeedModelState.Loading
+            repository.getNewPosts()
+            _state.value = FeedModelState.Idle
+        } catch (e: Exception) {
+            _state.value = FeedModelState.Error
+        }
+    }
     }

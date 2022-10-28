@@ -15,4 +15,5 @@ interface PostRepository {
     suspend  fun save(post: Post)
     suspend  fun removeById(id: Long)
     suspend fun likeByIdAsync(post: Post)
+    suspend fun getNewPosts()
 }

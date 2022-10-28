@@ -91,7 +91,15 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
             throw UnknownError
         }
     }
-
+    override suspend fun getNewPosts() {
+        try {
+            postDao.viewedPosts()
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
+    }
     override suspend fun likeByIdAsync(post: Post) {
         val id = post.id
         if (!post.likedByMe) {

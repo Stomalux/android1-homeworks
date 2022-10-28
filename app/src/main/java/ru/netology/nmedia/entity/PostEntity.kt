@@ -14,8 +14,9 @@ data class PostEntity(
     val published: String,
     val likedByMe: Boolean,
     val likes: Int = 0,
+    val viewed: Boolean = false,
 ) {
-    fun toDto() = Post(id, author, authorAvatar, content, published, likedByMe, likes)
+    fun toDto() = Post(id, author, authorAvatar, content, published, likedByMe, likes,null,viewed)
 
     companion object {
         fun fromDto(dto: Post) =
@@ -26,7 +27,8 @@ data class PostEntity(
                 dto.content,
                 dto.published,
                 dto.likedByMe,
-                dto.likes
+                dto.likes,
+                dto.viewed
             )
     }
 }
