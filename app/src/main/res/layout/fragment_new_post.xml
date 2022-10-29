@@ -23,13 +23,13 @@
         style="@style/Widget.MaterialComponents.BottomAppBar.Colored"
         />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/ok"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/description_post_save"
-        app:srcCompat="@drawable/ic_ok_24dp"
-        app:layout_anchor="@id/bottomAppBar"
-        />
+<!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--        android:id="@+id/ok"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:contentDescription="@string/description_post_save"-->
+<!--        app:srcCompat="@drawable/ic_ok_24dp"-->
+<!--        app:layout_anchor="@id/bottomAppBar"-->
+<!--        />-->
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
