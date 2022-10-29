@@ -36,7 +36,7 @@ class FeedFragment : Fragment() {
 
             override fun onLike(post: Post) {
                 viewModel.likeById(post)
-               // viewModel.loadPosts()
+                // viewModel.loadPosts()
             }
 
             override fun onRemove(post: Post) {
@@ -58,8 +58,8 @@ class FeedFragment : Fragment() {
         binding.list.adapter = adapter
         viewModel.data.observe(viewLifecycleOwner) { state ->
             adapter.submitList(state.posts)
-          //  binding.progress.isVisible = state.loading
-         //   binding.errorGroup.isVisible = state.error
+            //  binding.progress.isVisible = state.loading
+            //   binding.errorGroup.isVisible = state.error
             binding.emptyText.isVisible = state.empty
         }
 
@@ -67,22 +67,23 @@ class FeedFragment : Fragment() {
             binding.progress.isVisible = state is FeedModelState.Loading
             if (state is FeedModelState.Error) {
                 Snackbar.make(binding.root, R.string.error_loading, Snackbar.LENGTH_LONG)
-                    .setAction(R.string.retry_loading) {
-                    viewModel.refresh()
-                }
+                    .setAction(
+                        R.string.retry_loading
+                    ) {
+                        viewModel.refresh()
+                    }
                     .show()
             }
             binding.errorGroup.isVisible = state is FeedModelState.Error
             binding.swipeRefresh.isRefreshing = state is FeedModelState.Refreshing
-           }
-            //
+        }
+        //
 
         binding.retryButton.setOnClickListener {
             viewModel.loadPosts()
         }
-
-        binding.swipeRefresh.setOnRefreshListener {
-            viewModel.refresh()
+         binding.swipeRefresh.setOnRefreshListener {
+           viewModel.refresh()
         }
 
         binding.fab.setOnClickListener {
@@ -96,12 +97,13 @@ class FeedFragment : Fragment() {
                 binding.newPosts.text = getString(R.string.new_posts)
                 binding.newPosts.visibility = View.VISIBLE
             }
-            println("Newer count: $it")
+           // println("Newer count: $it")
         }
         binding.newPosts.setOnClickListener {
             binding.newPosts.visibility = View.GONE
-            binding.list.smoothScrollToPosition(0)
             viewModel.loadNewPosts()
+            binding.list.smoothScrollToPosition(0)
+
         }
 
         return binding.root

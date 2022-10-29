@@ -4,10 +4,7 @@ package ru.netology.nmedia.repository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import ru.netology.nmedia.api.PostApiServiceHolder
 import ru.netology.nmedia.dao.PostDao
 import ru.netology.nmedia.dto.Post
@@ -22,9 +19,9 @@ import java.io.IOException
 
 class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
 
-    override val data = postDao.getAll().map { it.toDto() }.flowOn(Dispatchers.Default)
 
 
+    override val data =  postDao.getAll().map { it.toDto() }.flowOn(Dispatchers.Default)
     override fun getNewerCount(firstId: Long): Flow<Int> = flow {
         try {
             while (true) {
@@ -33,7 +30,15 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
                     throw ApiError(response.code(), response.message())
                 }
                 val body = response.body() ?: throw ApiError(response.code(), response.message())
+
+
+
+
+
                 postDao.insert(body.toEntity())
+
+
+
                 emit(body.size)
                 delay(10_000L)
             }
@@ -55,7 +60,8 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
                 throw ApiError(response.code(), response.message())
             }
             val body = response.body() ?: throw ApiError(response.code(), response.message())
-            postDao.insert(body.toEntity())
+            postDao.insert(body.toEntity()
+                .map { it.copy(viewed = true) })
         } catch (e: IOException) {
             throw NetworkError
         } catch (e: Exception) {
@@ -70,7 +76,7 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
                 throw ApiError(response.code(), response.message())
             }
             val body = response.body() ?: throw ApiError(response.code(), response.message())
-            postDao.insert(PostEntity.fromDto(body))
+            postDao.insert(PostEntity.fromDto(body).copy(viewed = true))
         } catch (e: IOException) {
             throw NetworkError
         } catch (e: Exception) {
@@ -110,7 +116,7 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
                     throw ApiError(response.code(), response.message())
                 }
                 val body = response.body() ?: throw ApiError(response.code(), response.message())
-                postDao.insert(PostEntity.fromDto(body))
+                postDao.insert(PostEntity.fromDto(body).copy(viewed = true))
             } catch (e: IOException) {
                 throw NetworkError
             } catch (e: Exception) {
@@ -124,7 +130,7 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
                     throw ApiError(response.code(), response.message())
                 }
                 val body = response.body() ?: throw ApiError(response.code(), response.message())
-                postDao.insert(PostEntity.fromDto(body))
+                postDao.insert(PostEntity.fromDto(body).copy(viewed = true))
             } catch (e: IOException) {
                 throw NetworkError
             } catch (e: Exception) {

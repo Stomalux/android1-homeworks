@@ -27,7 +27,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: PostRepository = PostRepositoryImpl(
         AppDb.getInstance(application).postDao()
     )
-
+    var firstId: Long = 0
     // private val _data = MutableLiveData(FeedModel())
     val data: LiveData<FeedModel> = repository.data.map (::FeedModel )
         .asLiveData(Dispatchers.Default)
@@ -37,8 +37,9 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     val state: LiveData<FeedModelState>
         get() = _state
 
-    val newerCount: LiveData<Int> = data.switchMap {                            //следим за таблицей и как только изменется
-        repository.getNewerCount(it.posts.firstOrNull()?.id ?: 0L)          //пересоздаем подписку на новые посты
+    val newerCount: LiveData<Int> = data.switchMap { //следим за таблицей и как только изменется
+        firstId =it.posts.firstOrNull()?.id ?: 0L
+       repository.getNewerCount(firstId) //пересоздаем подписку на новые посты
             .asLiveData(Dispatchers.Default)
     }
 
@@ -69,12 +70,10 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             try {
                 _state.value = FeedModelState.Loading
 
-             //   println("555555555555555555555555555555555555555555555555555555555")
-                ///////////////////////////////////////////////////////////////////////////////////////////////
-                repository.likeByIdAsync(post)
+               repository.likeByIdAsync(post)
                 _state.value = FeedModelState.Idle
                 _postCreated.postValue(Unit)
-                loadPosts()
+              //  loadPosts()
             } catch (e: Exception) {
                 _state.value = FeedModelState.Error
             }
@@ -97,7 +96,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         fun removeById(id: Long) {
             viewModelScope.launch {
                 repository.removeById(id)
-                loadPosts()
+               // loadPosts()
 //            override fun onSuccess(posts: Unit) {
 //
 //            }
