@@ -21,7 +21,12 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
 
 
 
-    override val data =  postDao.getAll().map { it.toDto() }.flowOn(Dispatchers.Default)
+    override val data =  postDao.getAll().map { it.toDto() }
+
+         .map {  it.filter {it.viewed }}
+
+
+        .flowOn(Dispatchers.Default)
     override fun getNewerCount(firstId: Long): Flow<Int> = flow {
         try {
             while (true) {
@@ -30,15 +35,9 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
                     throw ApiError(response.code(), response.message())
                 }
                 val body = response.body() ?: throw ApiError(response.code(), response.message())
+                postDao.insert(body.toEntity().map { it.copy(viewed = false) })
 
-
-
-
-
-                postDao.insert(body.toEntity())
-
-
-
+                //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 emit(body.size)
                 delay(10_000L)
             }
@@ -52,7 +51,27 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
 
     }
 
-
+//    override fun getNewerLoad(firstId: Long): Flow<Int> = flow {
+//        try {
+//            while (true) {
+//                val response = PostApiServiceHolder.service.getNewer(firstId)
+//                if (!response.isSuccessful) {
+//                    throw ApiError(response.code(), response.message())
+//                }
+//                val body = response.body() ?: throw ApiError(response.code(), response.message())
+//                postDao.insert(body.toEntity())
+//                emit(body.size)
+//                delay(10_000L)
+//            }
+//        } catch (e: CancellationException) {
+//            throw e
+//        } catch (e: IOException) {
+//            throw NetworkError
+//        } catch (e: Exception) {
+//            throw UnknownError
+//        }
+//
+//    }
     override suspend fun getAllAsync() {
         try {
             val response = PostApiServiceHolder.service.getAllAsync()
@@ -62,6 +81,8 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
             val body = response.body() ?: throw ApiError(response.code(), response.message())
             postDao.insert(body.toEntity()
                 .map { it.copy(viewed = true) })
+
+            //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         } catch (e: IOException) {
             throw NetworkError
         } catch (e: Exception) {
@@ -99,7 +120,9 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
     }
     override suspend fun getNewPosts() {
         try {
+            println("getNewPosts11111111111111111111111111111111111111")
             postDao.viewedPosts()
+            println("viewedPosts111111111111111111111")
         } catch (e: IOException) {
             throw NetworkError
         } catch (e: Exception) {
@@ -116,7 +139,8 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
                     throw ApiError(response.code(), response.message())
                 }
                 val body = response.body() ?: throw ApiError(response.code(), response.message())
-                postDao.insert(PostEntity.fromDto(body).copy(viewed = true))
+                postDao.insert(PostEntity.fromDto(body))          //.copy(viewed = true))
+           //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             } catch (e: IOException) {
                 throw NetworkError
             } catch (e: Exception) {
@@ -130,7 +154,7 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
                     throw ApiError(response.code(), response.message())
                 }
                 val body = response.body() ?: throw ApiError(response.code(), response.message())
-                postDao.insert(PostEntity.fromDto(body).copy(viewed = true))
+                postDao.insert(PostEntity.fromDto(body))    //.copy(viewed = true))
             } catch (e: IOException) {
                 throw NetworkError
             } catch (e: Exception) {

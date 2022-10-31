@@ -30,6 +30,8 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     var firstId: Long = 0
     // private val _data = MutableLiveData(FeedModel())
     val data: LiveData<FeedModel> = repository.data.map (::FeedModel )
+
+
         .asLiveData(Dispatchers.Default)
     //  get() = _data
 
@@ -135,6 +137,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         }
     fun loadNewPosts() = viewModelScope.launch {
         try {
+            println("loadNewPosts1111111111111111111111111111111111111")
             _state.value = FeedModelState.Loading
             repository.getNewPosts()
             _state.value = FeedModelState.Idle
