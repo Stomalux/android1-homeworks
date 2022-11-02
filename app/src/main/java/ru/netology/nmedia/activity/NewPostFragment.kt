@@ -34,24 +34,24 @@ class NewPostFragment : Fragment() {
             false
         )
 
-        requireActivity().addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.create_post_menu, menu)
+    requireActivity().addMenuProvider(object : MenuProvider {
+        override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+            menuInflater.inflate(R.menu.create_post_menu, menu)
+        }
+
+        override fun onMenuItemSelected(menuItem: MenuItem): Boolean =
+            when(menuItem.itemId) {
+                R.id.save -> {
+                    viewModel.changeContent(binding.edit.text.toString())
+                    viewModel.save()
+                    AndroidUtils.hideKeyboard(requireView())
+                    true
+                }
+                else ->false
             }
 
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean =
-                when (menuItem.itemId) {
-                    R.id.save -> {
-                        viewModel.changeContent(binding.edit.text.toString())
-                        viewModel.save()
-                        AndroidUtils.hideKeyboard(requireView())
 
-                        true
-                    }
-                    else -> false
-                }
-
-        }, viewLifecycleOwner)
+    }, viewLifecycleOwner )
 
 
 
