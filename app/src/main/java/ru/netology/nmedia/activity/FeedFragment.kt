@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
+
 import ru.netology.nmedia.R
 import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
@@ -58,9 +59,11 @@ class FeedFragment : Fragment() {
         binding.list.adapter = adapter
         viewModel.data.observe(viewLifecycleOwner) { state ->
             adapter.submitList(state.posts)
-            println(" viewModel.data.observe(viewLifecycleOwner)")
-            //  binding.progress.isVisible = state.loading
-            //   binding.errorGroup.isVisible = state.error
+            println(" viewModel.data.observe(viewLifecycleOwner прокрутка)")
+           // binding.progress.isVisible = state.loading
+           // binding.errorGroup.isVisible = state.error
+               binding.list.smoothScrollToPosition(0)
+            println(" после прокрутки в viewModel.data.observe")
             binding.emptyText.isVisible = state.empty
         }
 
@@ -83,8 +86,8 @@ class FeedFragment : Fragment() {
         binding.retryButton.setOnClickListener {
             viewModel.loadPosts()
         }
-         binding.swipeRefresh.setOnRefreshListener {
-           viewModel.refresh()
+        binding.swipeRefresh.setOnRefreshListener {
+            viewModel.refresh()
         }
 
         binding.fab.setOnClickListener {
@@ -95,15 +98,20 @@ class FeedFragment : Fragment() {
 
         viewModel.newerCount.observe(viewLifecycleOwner) {
             if (it > 0) {
+                println("Скоробудет новый пост")
+
                 binding.newPosts.text = getString(R.string.new_posts)
                 binding.newPosts.visibility = View.VISIBLE
             }
-           // println("Newer count: $it")
+            // println("Newer count: $it")
         }
         binding.newPosts.setOnClickListener {
             binding.newPosts.visibility = View.GONE
+           // binding.list.smoothScrollToPosition(3)
             viewModel.loadNewPosts()
+             println("перед прокруткой 2")
             binding.list.smoothScrollToPosition(0)
+            println("после прокрутки 2")
 
         }
 

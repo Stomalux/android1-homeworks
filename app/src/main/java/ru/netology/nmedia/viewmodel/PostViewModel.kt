@@ -74,7 +74,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
                repository.likeByIdAsync(post)
                 _state.value = FeedModelState.Idle
-                _postCreated.postValue(Unit)
+               _postCreated.postValue(Unit)
               //  loadPosts()
             } catch (e: Exception) {
                 _state.value = FeedModelState.Error

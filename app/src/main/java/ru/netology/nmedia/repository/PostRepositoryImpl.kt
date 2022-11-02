@@ -30,6 +30,9 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
     override fun getNewerCount(firstId: Long): Flow<Int> = flow {
         try {
             while (true) {
+                delay(10_000L)
+/////////////////////////////////////////////////////////////
+                println(firstId)
                 val response = PostApiServiceHolder.service.getNewer(firstId)
                 if (!response.isSuccessful) {
                     throw ApiError(response.code(), response.message())
@@ -37,9 +40,11 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
                 val body = response.body() ?: throw ApiError(response.code(), response.message())
                 postDao.insert(body.toEntity().map { it.copy(viewed = false) })
 
+                println("bodi size")
+                 println(body.size)
                 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 emit(body.size)
-                delay(10_000L)
+
             }
         } catch (e: CancellationException) {
             throw e
@@ -139,7 +144,7 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
                     throw ApiError(response.code(), response.message())
                 }
                 val body = response.body() ?: throw ApiError(response.code(), response.message())
-                postDao.insert(PostEntity.fromDto(body))          //.copy(viewed = true))
+                postDao.insert(PostEntity.fromDto(body).copy(viewed = true))
            //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             } catch (e: IOException) {
                 throw NetworkError
@@ -154,7 +159,7 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
                     throw ApiError(response.code(), response.message())
                 }
                 val body = response.body() ?: throw ApiError(response.code(), response.message())
-                postDao.insert(PostEntity.fromDto(body))    //.copy(viewed = true))
+                postDao.insert(PostEntity.fromDto(body).copy(viewed = true))
             } catch (e: IOException) {
                 throw NetworkError
             } catch (e: Exception) {
