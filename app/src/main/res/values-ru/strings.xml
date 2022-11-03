@@ -22,6 +22,7 @@
     <string name="channel_remote_name">Уведомления с сервера</string>
     <string name="channel_remote_description">Уведомления с удалённого сервера</string>
     <string name="new_posts">Новые посты</string>
+    <string name="clear">Удалить</string>
 
 
 </resources>
