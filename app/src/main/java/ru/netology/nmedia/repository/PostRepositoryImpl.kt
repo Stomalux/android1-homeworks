@@ -1,12 +1,18 @@
 package ru.netology.nmedia.repository
 
 
+
+import android.content.ContentResolver
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.withContext
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import ru.netology.nmedia.api.PostApiServiceHolder
 import ru.netology.nmedia.dao.PostDao
+import ru.netology.nmedia.dto.Media
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.entity.PostEntity
 import ru.netology.nmedia.entity.toDto
@@ -14,10 +20,10 @@ import ru.netology.nmedia.entity.toEntity
 import ru.netology.nmedia.error.ApiError
 import ru.netology.nmedia.error.NetworkError
 import ru.netology.nmedia.error.UnknownError
+import ru.netology.nmedia.model.PhotoModel
 import java.io.IOException
 
-
-class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
+class PostRepositoryImpl(private val postDao: PostDao, private val contentResolver: ContentResolver,) : PostRepository {
 
 
 
@@ -167,4 +173,32 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
             }
         }
     }
+
+    private suspend fun upload(upload: PhotoModel): Media {
+        try {
+            val media = MultipartBody.Part.createFormData(
+                "file",
+                "file",
+                withContext(Dispatchers.Default) {
+                    requireNotNull(contentResolver.openInputStream(upload.uri))
+                        .readBytes()
+                        .toRequestBody()
+                }
+            )
+
+            val response = PostApiServiceHolder.service.upload(media)
+            if (!response.isSuccessful) {
+                throw ApiError(response.code(), response.message())
+            }
+
+            return response.body() ?: throw ApiError(response.code(), response.message())
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
+    }
+
+
+
 }

@@ -15,7 +15,7 @@ import ru.netology.nmedia.model.PhotoModel
 
 import ru.netology.nmedia.repository.*
 import ru.netology.nmedia.util.SingleLiveEvent
-import java.io.File
+//
 
 
 private val empty = Post(
@@ -31,7 +31,8 @@ private val empty = Post(
 class PostViewModel(application: Application) : AndroidViewModel(application) {
     // упрощённый вариант
     private val repository: PostRepository = PostRepositoryImpl(
-        AppDb.getInstance(application).postDao()
+        AppDb.getInstance(application).postDao(),
+        application.contentResolver,
     )
     var firstId: Long = 0
 
@@ -158,9 +159,9 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun changePhoto(uri: Uri?, file: File?) {
-        _photo.value = if (uri != null && file != null) {
-            PhotoModel(uri, file)
+    fun changePhoto(uri: Uri?) {
+        _photo.value = if (uri != null) {
+            PhotoModel(uri)
         } else {
             null
         }
